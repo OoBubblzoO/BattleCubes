@@ -32,7 +32,7 @@ class Cube:
     def move(self):
         # Update cube position based on velocity
         self.position[0] += self.velocity[0]
-        self.position[0] += self.velocity[1]
+        self.position[1] += self.velocity[1]
 
         #check for wall collision and reverse direction if hit
 
