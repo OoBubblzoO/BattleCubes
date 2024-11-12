@@ -36,10 +36,13 @@ class Cube:
 
         #check for wall collision and reverse direction if hit
 
-        if self.position[0] <= 0 or self.position[0] >= WIDTH:
+        if self.position[0] <= 0 or self.position[0] + 50 >= WIDTH:
             self.velocity[0] *= -1 #reverse in X
-        if self.position[1] <= 0 or self.position[1] >= HEIGHT:
+            #print(f"{self.color} cube hit a verticle wall")
+
+        if self.position[1] <= 0 or self.position[1] + 50 >= HEIGHT:
             self.velocity[1] *= -1 #reverse in y
+            #print(f"{self.color} hit a horizontal wall.")
     
     def draw(self):
         # Draw cube 
@@ -53,8 +56,8 @@ class Cube:
 
 # MAIN game loop
 
-cube1 = Cube(TEAL, [100, 100], [random.randint(-5, 5), random.randint(-5, 5)])
-cube2 = Cube(TEAL, [300, 300], [random.randint(-5, 5), random.randint(-5, 5)])
+cube1 = Cube(TEAL, [WIDTH // 3, HEIGHT // 3], [random.randint(-1, 1), random.randint(-1, 1)])
+cube2 = Cube(PINK, [2 * WIDTH // 3, 2 * HEIGHT // 3], [random.randint(-1, 1), random.randint(-1, 1)])
 
 running = True
 while running:
