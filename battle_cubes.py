@@ -18,6 +18,11 @@ PINK = (255, 0, 127)
 
 BACKGROUND_COLOR = (0, 0, 0)
 
+#TIMER for pickups
+MIN_PICKUP_INTERVAL = 3000 # 3 secdods
+MAX_PICKUP_INTERVAL = 5000 # 5 seconds
+PICKUP_VISIBLE_DURATION = 2000 # pickup visible duration
+
 # Cube class definition
 
 class Cube:
@@ -55,13 +60,50 @@ class Cube:
         if BACKGROUND_COLOR == self.color:
             other.health -= 1 
 
+class Pickup:
+    def __init__(self):
+        self.size = 20
+        self.position = [random.randint(0, WIDTH - self.size), random.randint(0, HEIGHT - self.size)]
+        self.visible = False
+        self.color = None 
+
+    def draw(self):
+        if self.visible:
+            pygame.draw.rect(screen, self.color, (*self.position, self.size, self.size)) 
+
+    def reset(self):
+        # Set pikcup to new location and assign color
+        self.position = [random.randint(0, WIDTH - self.size), random.randint(0, HEIGHT - self.size)]
+        self.color = random.choice([TEAL, PINK]) # choose color w choice
+        print(f"Pickup appeared at {self.position} with color {self.color}")
+
+    def is_collected_by(self, cube):
+        if not self.visible or self.color != cube.color:
+            return False
+        cube_rect = pygame.Rect(*cube.position, 50, 50 )
+        pickup_rect = pygame.Rect(*self.position, self.size, self.size)
+        return cube_rect.colliderect(pickup_rect) 
+
+
 # MAIN game loop
+
+# Create Cube
 
 cube1 = Cube(TEAL, [WIDTH // 3, HEIGHT // 3], [random.uniform(-0.1, 0.1), random.uniform(-0.1, 0.1)])
 cube2 = Cube(PINK, [2 * WIDTH // 3, 2 * HEIGHT // 3], [random.uniform(-0.1, 0.1), random.uniform(-0.1, 0.1)])
 
+pickup = Pickup()
+
+# Timer vars
+
+last_pickup_time = pygame.time.get_ticks()
+pickup_interval = random.randint(MIN_PICKUP_INTERVAL, MAX_PICKUP_INTERVAL)
+pickup_visible = False
+
 running = True
 while running:
+
+    current_time = pygame.time.get_ticks()
 
     # Check for Pygame event 
 
@@ -69,6 +111,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    # Handle Pickup / Despawn 
+
+    if not pickup.visible and current_time - last_pickup_time >= pickup_interval:
+        pickup.reset()
+        pickup.visible = True
+        last_pickup_time = current_time
+        pickup_interval = random.randint(MAX_PICKUP_INTERVAL, MAX_PICKUP_INTERVAL) # new interval
+
+    # Fill background
     screen.fill(BACKGROUND_COLOR)
 
     # Move and draw
@@ -77,6 +128,21 @@ while running:
     cube2.move()
     cube1.draw()
     cube2.draw()
+
+    # Check if either cube has picked up
+    if pickup.visible:
+        if pickup.is_collected_by(cube1):
+            BACKGROUND_COLOR = cube1.color
+            pickup.visible = False # hide pickup
+            last_pickup_time = current_time # reset timer
+            cube1.attack(cube2)
+
+        elif pickup.is_collected_by(cube2):
+            BACKGROUND_COLOR = cube2.color
+            pickup.visible = False # hide pickup
+            last_pickup_time = current_time # reset timer
+            cube2.attack(cube1)
+    pickup.draw()
 
     # Update display with changes
     pygame.display.flip()
