@@ -1,5 +1,6 @@
 import pygame
 import random
+from logo import logo_text
 
 #initialize pygame
 pygame.init()
@@ -56,8 +57,8 @@ class Cube:
 
 # MAIN game loop
 
-cube1 = Cube(TEAL, [WIDTH // 3, HEIGHT // 3], [random.randint(-1, 1), random.randint(-1, 1)])
-cube2 = Cube(PINK, [2 * WIDTH // 3, 2 * HEIGHT // 3], [random.randint(-1, 1), random.randint(-1, 1)])
+cube1 = Cube(TEAL, [WIDTH // 3, HEIGHT // 3], [random.uniform(-0.1, 0.1), random.uniform(-0.1, 0.1)])
+cube2 = Cube(PINK, [2 * WIDTH // 3, 2 * HEIGHT // 3], [random.uniform(-0.1, 0.1), random.uniform(-0.1, 0.1)])
 
 running = True
 while running:
