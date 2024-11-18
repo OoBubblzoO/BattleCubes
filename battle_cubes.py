@@ -51,6 +51,10 @@ class Cube:
             #print(f"{self.color} hit a horizontal wall.")
     
     def draw(self):
+
+        # Draw outline for cube
+        pygame.draw.rect(screen, (255, 255, 255), (*self.position, 50, 50), border_bottom_left_radius=3)
+
         # Draw cube 
         pygame.draw.rect(screen, self.color, (*self.position, 50, 50))
     
