@@ -23,6 +23,14 @@ MIN_PICKUP_INTERVAL = 3000 # 3 secdods
 MAX_PICKUP_INTERVAL = 5000 # 5 seconds
 MAX_ACTIVE_PICKUPS = 5 # limit for max number of pickups at a time
 
+# Brightness ajustment
+def adjust_brightness(color, factor):
+    #color (tuple) R G B colors
+    #factor (float)1 for darker, 1 for lights
+
+    #tuple (rgb) color
+    return tuple(max(0, min(255, int(c * factor))) for c in color)
+
 # Cube class definition
 
 class Cube:
@@ -129,12 +137,12 @@ while running:
     # Check if either cube has picked up
     for pickup in active_pickups[:]:
         if pickup.is_collected_by(cube1):
-            BACKGROUND_COLOR = cube1.color
+            BACKGROUND_COLOR = adjust_brightness(cube1.color, 0.8)
             active_pickups.remove(pickup) # remove pickup from the list
             cube1.attack(cube2)
 
         elif pickup.is_collected_by(cube2):
-            BACKGROUND_COLOR = cube2.color
+            BACKGROUND_COLOR = adjust_brightness(cube2.color, 0.8)
             active_pickups.remove(pickup)
             cube2.attack(cube1)
     
