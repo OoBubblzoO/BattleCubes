@@ -6,7 +6,7 @@ from logo import logo_text
 pygame.init()
 
 # Screen dimensions
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 700, 500
 
 # Create the display window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -57,6 +57,18 @@ class Cube:
         if self.position[1] <= 0 or self.position[1] + 50 >= HEIGHT:
             self.velocity[1] *= -1 #reverse in y
             #print(f"{self.color} hit a horizontal wall.")
+    def draw_health_bar(self):
+        bar_width = 50
+        bar_height = 5
+
+        health_percentage = max(self.health, 0) / 10 # max health is 10
+
+        current_width = int(bar_width * health_percentage)
+
+        # Healthbar background
+        pygame.draw.rect(screen, (50, 50, 50), (self.position[0], self.position[1] - 10, bar_width, bar_height))
+        # Healthbar current
+        pygame.draw.rect(screen, (0, 255, 0), (self.position[0], self.position[1] - 10, current_width, bar_height))
     
     def draw(self):
 
@@ -65,6 +77,8 @@ class Cube:
 
         # Draw cube 
         pygame.draw.rect(screen, self.color, (*self.position, 50, 50))
+
+        self.draw_health_bar()
     
     def attack(self, other):
         
