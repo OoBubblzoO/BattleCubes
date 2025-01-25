@@ -22,6 +22,7 @@ BACKGROUND_COLOR = (0, 0, 0)
 MIN_PICKUP_INTERVAL = 3000 # 3 secdods
 MAX_PICKUP_INTERVAL = 5000 # 5 seconds
 MAX_ACTIVE_PICKUPS = 5 # limit for max number of pickups at a time
+battle_cube = None
 
 # Brightness ajustment
 def adjust_brightness(color, factor):
@@ -80,12 +81,6 @@ class Cube:
 
         self.draw_health_bar()
     
-    def attack(self, other):
-        
-        # Reduce health of other cube if background matches this cube's color
-        if BACKGROUND_COLOR == self.color:
-            other.health -= 1 
-
 class Pickup:
     def __init__(self):
         self.size = 20
@@ -120,6 +115,12 @@ active_pickups = []
 last_pickup_time = pygame.time.get_ticks()
 pickup_interval = random.randint(MIN_PICKUP_INTERVAL, MAX_PICKUP_INTERVAL)
 
+# Cooldown for cube dmg
+
+damage_cooldown = 500 #ms
+cube1_last_damage = 0
+cube2_last_damage = 0
+
 running = True
 while running:
     current_time = pygame.time.get_ticks()
@@ -148,17 +149,46 @@ while running:
     cube1.draw()
     cube2.draw()
 
+    # Check for collision and handle dmg
+    cube1_rect = pygame.Rect(*cube1.position, 50, 50)
+    cube2_rect = pygame.Rect(*cube2.position, 50, 50)
+
+    
+    if cube1_rect.colliderect(cube2_rect):
+        current_time = pygame.time.get_ticks()
+
+        if battle_cube == cube1 and current_time - cube2_last_damage >= damage_cooldown:
+            cube2.health -= 1
+            cube2_last_damage = current_time
+            print(f"cube2 takes damage! Health: {cube2.health}")
+        elif battle_cube == cube2 and current_time - cube1_last_damage >= damage_cooldown:
+            cube1.health -= 1
+            cube1_last_damage = current_time
+            print(f"cube1 takes damage! Health: {cube1.health}")
+
+    if cube1.health <= 0:
+        print("Game Over! Pink WINS!")
+        running = False
+
+    if cube2.health <= 0:
+        print("Game Over! Teal WINS!")
+        running = False
+
     # Check if either cube has picked up
     for pickup in active_pickups[:]:
         if pickup.is_collected_by(cube1):
             BACKGROUND_COLOR = adjust_brightness(cube1.color, 0.8)
             active_pickups.remove(pickup) # remove pickup from the list
-            cube1.attack(cube2)
+            battle_cube = cube1
+            print("cube1 is ready!")
+            
 
         elif pickup.is_collected_by(cube2):
             BACKGROUND_COLOR = adjust_brightness(cube2.color, 0.8)
             active_pickups.remove(pickup)
-            cube2.attack(cube1)
+            battle_cube = cube2
+            print("cube2 is ready!")
+            
     
     # draw all actives
     for pickup in active_pickups:
