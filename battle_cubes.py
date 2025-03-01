@@ -15,8 +15,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 TEAL = (0, 128, 128)
 PINK = (255, 0, 127)
+WHITE = (255, 255, 255)
 
 BACKGROUND_COLOR = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 #TIMER for pickups
 MIN_PICKUP_INTERVAL = 3000 # 3 secdods
@@ -97,7 +99,16 @@ class Pickup:
         cube_rect = pygame.Rect(*cube.position, 50, 50 )
         pickup_rect = pygame.Rect(*self.position, self.size, self.size)
         return cube_rect.colliderect(pickup_rect) 
+    
 
+def display_winner(winner_text):
+    screen.fill(BACKGROUND_COLOR)
+    font = pygame.font.Font(None, 50)
+    text_surface = font.render(winner_text, True, WHITE)
+    text_rect = text_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(text_surface, text_rect)
+    pygame.display.flip()
+    pygame.time.delay(3000) # 3 seconds
 
 # MAIN game loop
 
@@ -167,11 +178,11 @@ while running:
             print(f"cube1 takes damage! Health: {cube1.health}")
 
     if cube1.health <= 0:
-        print("Game Over! Pink WINS!")
+        display_winner("Game Over! Pink WINS!")
         running = False
 
     if cube2.health <= 0:
-        print("Game Over! Teal WINS!")
+        display_winner("Game Over! Teal WINS!")
         running = False
 
     # Check if either cube has picked up
